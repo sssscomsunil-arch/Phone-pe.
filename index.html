@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#5420d8">
+<link rel="manifest" href="manifest.json">
+<title>PayFast Demo Simulation</title>
+
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{
+  margin:0;font-family:Arial,sans-serif;
+  background:#f5f2ff;color:#17134d
+}
+button,input{font:inherit}
+button{border:0;cursor:pointer}
+.app{max-width:520px;margin:auto;min-height:100vh;background:#fff}
+.screen{display:none;min-height:100vh}
+.screen.active{display:block}
+
+.demo{
+ display:inline-block;background:#ffda3d;color:#171717;
+ padding:9px 18px;border-radius:22px;font-size:12px;
+ font-weight:900
+}
+
+.top{
+ background:linear-gradient(135deg,#4d19cc,#762be8);
+ color:white;padding:25px 20px 30px;
+ border-radius:0 0 28px 28px
+}
+
+.content{padding:22px 18px}
+h1{margin:15px 0}
+h2{margin-top:0}
+
+.btn{
+ width:100%;padding:16px;border-radius:15px;
+ background:linear-gradient(135deg,#5220d6,#7928eb);
+ color:#fff;font-weight:900;
+ box-shadow:0 7px 18px #4b18c52b
+}
+
+/* SCREEN 1 */
+.cards{
+ display:grid;grid-template-columns:1fr 1fr;
+ gap:12px;margin-top:25px
+}
+.card{
+ border:1px solid #ddd4fa;border-radius:20px;
+ padding:14px;background:#fff;
+ box-shadow:0 7px 22px #35137b12
+}
+.card h3{text-align:center;font-size:14px}
+.price{
+ text-align:center;font-size:28px;
+ font-weight:900;color:#5b20dc
+}
+.features{
+ font-size:11px;line-height:1.8;
+ color:#5c5874;margin:10px 0
+}
+.buy{
+ width:100%;padding:11px;border-radius:20px;
+ background:#6624dd;color:white;font-weight:900
+}
+
+/* SCREEN 2 */
+.telegram{
+ min-height:100vh;
+ background:linear-gradient(160deg,#072b62,#06428e,#061d47);
+ color:white;text-align:center;padding:28px 18px
+}
+.tgicon{
+ width:115px;height:115px;border-radius:50%;
+ background:#19a8ed;margin:20px auto;
+ display:flex;align-items:center;justify-content:center;
+ font-size:60px
+}
+.tgtitle{font-size:40px;margin:8px 0}
+.linkbox{
+ display:flex;align-items:center;gap:8px;
+ background:#f5f8ff;border:5px solid #24b6f2;
+ border-radius:35px;padding:7px;margin:15px 0
+}
+.linkbox a{
+ flex:1;color:#52708f;text-decoration:none;
+ text-align:left;overflow:hidden;
+ white-space:nowrap;text-overflow:ellipsis;
+ font-size:13px;padding:12px 2px
+}
+.linkicon{
+ width:50px;height:50px;border-radius:50%;
+ background:#249fe0;color:white;
+ display:flex;align-items:center;
+ justify-content:center;font-size:22px
+}
+.next{
+ padding:15px 45px;border-radius:30px;
+ background:#16a8ec;color:white;
+ font-weight:900;font-size:20px
+}
+
+/* FORM */
+.box{
+ margin:25px 18px;padding:23px;
+ border:1px solid #dedaf0;border-radius:22px;
+ box-shadow:0 8px 25px #2e0f7b10
+}
+input.field{
+ width:100%;padding:15px;
+ border:2px solid #e0ddec;
+ border-radius:13px;
+ outline:none;margin:7px 0 14px
+}
+label{font-weight:800;color:#383260}
+
+/* HOME */
+.homehead{
+ background:linear-gradient(145deg,#4b1bd0,#7025e7);
+ color:white;padding:22px 18px 28px;
+ border-radius:0 0 30px 30px
+}
+.brand{font-size:26px;font-weight:900;margin-top:15px}
+.balance{
+ margin-top:18px;padding:20px;
+ border-radius:22px;background:#ffffff15
+}
+.amount{font-size:36px;font-weight:900;margin:7px 0}
+
+/* BANK */
+.bank{
+ display:flex;align-items:center;gap:13px;
+ border:2px solid #e1dcf2;
+ border-radius:18px;padding:16px;
+ margin:12px 0
+}
+.bank.selected{
+ border-color:#6224dc;background:#f5f0ff
+}
+.radio{
+ width:22px;height:22px;border:3px solid #aaa;
+ border-radius:50%
+}
+.selected .radio{border:7px solid #6224dc}
+
+/* PIN */
+.pinDots{
+ display:flex;justify-content:center;
+ gap:15px;margin:25px
+}
+.dot{
+ width:18px;height:18px;border-radius:50%;
+ background:#ddd
+}
+.dot.on{background:#5d20db}
+.keypad{
+ display:grid;grid-template-columns:repeat(3,1fr);
+ gap:12px
+}
+.key{
+ height:65px;border-radius:15px;
+ background:#f0edfb;color:#4520b9;
+ font-size:27px;font-weight:800
+}
+.key.pay{background:#6325dc;color:white}
+
+/* PROCESS */
+.processing{
+ min-height:100vh;
+ display:flex;flex-direction:column;
+ align-items:center;justify-content:center;
+ text-align:center
+}
+.loader{
+ width:110px;height:65px;
+ border-radius:40px;
+ background:linear-gradient(90deg,#d849e8,#5420dc);
+ animation:pulse 1s infinite alternate;
+ margin:35px
+}
+@keyframes pulse{
+ to{transform:scale(1.08);opacity:.6}
+}
+
+/* SUCCESS */
+.successHead{
+ background:#08bb53;color:white;
+ padding:35px 20px;text-align:center
+}
+.check{
+ width:75px;height:75px;border-radius:50%;
+ background:#00a84c;margin:auto;
+ display:flex;align-items:center;
+ justify-content:center;font-size:48px
+}
+.detail{
+ display:flex;justify-content:space-between;
+ padding:14px 0;border-bottom:1px solid #eee;
+ gap:15px
+}
+.status{
+ color:#078b42;background:#d8ffe9;
+ padding:7px 12px;border-radius:20px
+}
+.notice{text-align:center;color:#777;font-size:12px;padding:15px}
+
+@media(max-width:390px){
+ .cards{grid-template-columns:1fr}
+ .tgtitle{font-size:34px}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<!-- SCREEN 1 -->
+<section id="s1" class="screen active">
+<div class="top">
+<span class="demo">DEMO / SIMULATION</span>
+<h1>PayFast Demo</h1>
+<p>Choose a demo package to continue.</p>
+</div>
+
+<div class="content">
+<div class="cards">
+
+<div class="card">
+<h3>NORMAL BUY</h3>
+<div class="price">₹150</div>
+<div class="features">
+✓ Double Bank<br>
+✓ SMS Features<br>
+✓ Permanent History<br>
+✕ Sound Box
+</div>
+<button class="buy" onclick="go('s2')">BUY NOW ›</button>
+</div>
+
+<div class="card">
+<h3>SOUND BOX BUY</h3>
+<div class="price">₹299</div>
+<div class="features">
+✓ Double Bank<br>
+✓ SMS Features<br>
+✓ Permanent History<br>
+✓ Sound Box
+</div>
+<button class="buy" onclick="go('s2')">BUY NOW ›</button>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- SCREEN 2 -->
+<section id="s2" class="screen telegram">
+<span class="demo">DEMO / SIMULATION</span>
+
+<div class="tgicon">➤</div>
+
+<h1 class="tgtitle">
+Join Our<br>
+<span style="color:#29bdf5">Telegram</span>
+</h1>
+
+<p>Channel &amp; Group</p>
+<p>Get Latest Updates, Offers &amp; More</p>
+
+<div class="linkbox">
+<div class="linkicon">➤</div>
+<a href="https://t.me/PHONEPESELLER99"
+target="_blank">
+https://t.me/PHONEPESELLER99
+</a>
+<div class="linkicon">›</div>
+</div>
+
+<div class="linkbox">
+<div class="linkicon">➤</div>
+<a href="https://t.me/thesunnnny"
+target="_blank">
+https://t.me/thesunnnny
+</a>
+<div class="linkicon">›</div>
+</div>
+
+<p>Click on any link and
+<b style="color:#29bdf5">Join Now!</b>
+</p>
+
+<button class="next" onclick="go('s3')">
+NEXT ›
+</button>
+</section>
+
+<!-- SCREEN 3 -->
+<section id="s3" class="screen">
+
+<div class="top">
+<span class="demo">DEMO / SIMULATION</span>
+<h1>Enter Verification Code</h1>
+<p>Enter the 6-digit demo code.</p>
+</div>
+
+<div class="box">
+<h2>Demo Verification</h2>
+
+<div id="codeInputs"
+style="display:flex;gap:7px"></div>
+
+<p style="background:#eee8ff;padding:15px;border-radius:14px">
+Demo code: <b>890789</b>
+</p>
+</div>
+</section>
+
+<!-- SCREEN 4 -->
+<section id="s4" class="screen">
+
+<div class="homehead">
+<span class="demo">DEMO / SIMULATION</span>
+
+<div class="brand">
+💳 PayFast
+</div>
+
+<div class="balance">
+<b>Total Balance</b>
+<div class="amount">₹ 5,240.00</div>
+<div>🏦 Bank Account — Linked</div>
+</div>
+</div>
+
+<div class="content">
+
+<h2>Money Transfers</h2>
+
+<div style="
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:8px;text-align:center">
+
+<div>☎<br><small>To Mobile</small></div>
+<div>🏦<br><small>To Bank</small></div>
+<div>↓<br><small>Receive</small></div>
+<div>₹<br><small>Check Balance</small></div>
+
+</div>
+
+<br>
+
+<button class="btn" onclick="go('s5')">
+SEND MONEY
+</button>
+
+<div class="notice">
+Demo simulation only.
+</div>
+
+</div>
+</section>
+
+<!-- SCREEN 5 -->
+<section id="s5" class="screen">
+
+<div class="top">
+<span class="demo">DEMO / SIMULATION</span>
+<h1>Send Money</h1>
+</div>
+
+<div class="box">
+
+<label>Demo Recipient</label>
+<input id="recipient" class="field"
+value="Demo User">
+
+<label>Demo UPI ID</label>
+<input id="upi" class="field"
+value="demo@sim">
+
+<label>Amount</label>
+<input id="amount" class="field"
+inputmode="decimal"
+value="500">
+
+<label>Message</label>
+<input id="message" class="field"
+value="Demo payment">
+
+<button class="btn" onclick="continuePayment()">
+CONTINUE
+</button>
+
+</div>
+</section>
+
+<!-- SCREEN 6 -->
+<section id="s6" class="screen">
+
+<div class="top">
+<span class="demo">DEMO BANK — SIMULATION</span>
+<h1>Total Payable</h1>
+</div>
+
+<div class="box">
+
+<div id="payable"
+style="font-size:38px;
+font-weight:900;
+color:#5220d6;
+text-align:center">
+₹500.00
+</div>
+
+<p style="text-align:center">
+Select a demo payment account
+</p>
+
+<div class="bank selected"
+onclick="selectBank(this)"
+data-account="Demo Savings Account">
+<div class="radio"></div>
+<div>
+<b>Demo Savings Account</b><br>
+Demo Bank • XXXX 0513
+</div>
+</div>
+
+<div class="bank"
+onclick="selectBank(this)"
+data-account="Demo Secondary Account">
+<div class="radio"></div>
+<div>
+<b>Demo Secondary Account</b><br>
+Demo Bank • XXXX 7765
+</div>
+</div>
+
+<button id="payButton"
+class="btn"
+onclick="go('s7')">
+DEMO PAY ₹500.00
+</button>
+
+</div>
+</section>
+
+<!-- SCREEN 7 -->
+<section id="s7" class="screen">
+
+<div class="top">
+<span class="demo">DEMO / SIMULATION</span>
+<h1>Enter 4-Digit Demo PIN</h1>
+</div>
+
+<div class="content">
+
+<div class="pinDots">
+<div class="dot"></div>
+<div class="dot"></div>
+<div class="dot"></div>
+<div class="dot"></div>
+</div>
+
+<div class="keypad">
+
+<button class="key" onclick="press('1')">1</button>
+<button class="key" onclick="press('2')">2</button>
+<button class="key" onclick="press('3')">3</button>
+
+<button class="key" onclick="press('4')">4</button>
+<button class="key" onclick="press('5')">5</button>
+<button class="key" onclick="press('6')">6</button>
+
+<button class="key" onclick="press('7')">7</button>
+<button class="key" onclick="press('8')">8</button>
+<button class="key" onclick="press('9')">9</button>
+
+<button class="key" onclick="press('back')">⌫</button>
+<button class="key" onclick="press('0')">0</button>
+<button class="key pay" onclick="checkPin()">Pay</button>
+
+</div>
+
+</div>
+</section>
+
+<!-- SCREEN 8 -->
+<section id="s8" class="screen">
+
+<div class="processing">
+
+<span class="demo">DEMO / SIMULATION</span>
+
+<div class="loader"></div>
+
+<h1>Connecting Securely</h1>
+
+<p>Processing demo transaction...</p>
+
+</div>
+</section>
+
+<!-- SCREEN 9 -->
+<section id="s9" class="screen">
+
+<div class="successHead">
+
+<span class="demo">SIMULATION</span>
+
+<div class="check">✓</div>
+
+<h1>Transaction Successful</h1>
+
+<p id="time"></p>
+
+</div>
+
+<div class="box">
+
+<div class="detail">
+<span>Paid to</span>
+<b id="outName">Demo User</b>
+</div>
+
+<div class="detail">
+<span>Amount</span>
+<b id="outAmount">₹500.00</b>
+</div>
+
+<div class="detail">
+<span>Transaction ID</span>
+<b id="txn">DEMO000000</b>
+</div>
+
+<div class="detail">
+<span>Payment method</span>
+<b id="outBank">Demo Savings Account</b>
+</div>
+
+<div class="detail">
+<span>Status</span>
+<b class="status">DEMO SUCCESS</b>
+</div>
+
+<br>
+
+<button class="btn"
+onclick="alert('Demo details only. No real transaction occurred.')">
+VIEW DEMO DETAILS
+</button>
+
+</div>
+
+<div class="notice">
+Simulation only — no real money was sent.
+</div>
+
+</section>
+
+</div>
+
+<script>
+const state={
+ recipient:"Demo User",
+ amount:500,
+ bank:"Demo Savings Account",
+ pin:""
+};
+
+function go(id){
+ document.querySelectorAll(".screen")
+ .forEach(x=>x.classList.remove("active"));
+
+ document.getElementById(id)
+ .classList.add("active");
+
+ window.scrollTo(0,0);
+}
+
+/* 6 digit demo code */
+const codeBox=document.getElementById("codeInputs");
+
+for(let i=0;i<6;i++){
+
+ const input=document.createElement("input");
+
+ input.maxLength=1;
+ input.inputMode="numeric";
+
+ input.style.cssText=
+ "width:16.6%;height:58px;border:2px solid #ccc;"+
+ "border-radius:12px;text-align:center;font-size:24px;font-weight:bold";
+
+ input.oninput=function(){
+
+  this.value=this.value.replace(/\D/g,"");
+
+  if(this.value && i<5)
+   codeBox.children[i+1].focus();
+
+  const code=[...codeBox.children]
+   .map(x=>x.value).join("");
+
+  if(code.length===6){
+
+   if(code==="890789"){
+    setTimeout(()=>go("s4"),150);
+   }else{
+    alert("Wrong demo code. Use 890789.");
+    [...codeBox.children].forEach(x=>x.value="");
+    codeBox.children[0].focus();
+   }
+
+  }
+ };
+
+ input.onkeydown=function(e){
+  if(e.key==="Backspace" && !this.value && i>0)
+   codeBox.children[i-1].focus();
+ };
+
+ codeBox.appendChild(input);
+}
+
+/* Save editable fields */
+function continuePayment(){
+
+ state.recipient=
+ document.getElementById("recipient").value.trim()
+ ||"Demo User";
+
+ const amount=parseFloat(
+ document.getElementById("amount").value
+ );
+
+ if(!Number.isFinite(amount)||amount<0){
+  alert("Enter a valid demo amount.");
+  return;
+ }
+
+ state.amount=amount;
+
+ updateAmount();
+
+ go("s6");
+}
+
+function updateAmount(){
+
+ const money="₹"+state.amount.toFixed(2);
+
+ document.getElementById("payable")
+ .textContent=money;
+
+ document.getElementById("payButton")
+ .textContent="DEMO PAY "+money;
+}
+
+/* Bank selection */
+function selectBank(el){
+
+ document.querySelectorAll(".bank")
+ .forEach(x=>x.classList.remove("selected"));
+
+ el.classList.add("selected");
+
+ state.bank=el.dataset.account;
+}
+
+/* Demo PIN */
+function press(value){
+
+ if(value==="back"){
+  state.pin=state.pin.slice(0,-1);
+ }else if(state.pin.length<4){
+  state.pin+=value;
+ }
+
+ document.querySelectorAll(".dot")
+ .forEach((dot,i)=>{
+  dot.classList.toggle("on",i<state.pin.length);
+ });
+
+ if(state.pin.length===4)
+  setTimeout(checkPin,150);
+}
+
+function checkPin(){
+
+ if(state.pin!=="9080"){
+
+  alert("Wrong demo PIN. Use 9080.");
+
+  state.pin="";
+
+  document.querySelectorAll(".dot")
+  .forEach(x=>x.classList.remove("on"));
+
+  return;
+ }
+
+ go("s8");
+
+ setTimeout(showSuccess,1800);
+}
+
+/* Final demo result */
+function showSuccess(){
+
+ document.getElementById("outName")
+ .textContent=state.recipient;
+
+ document.getElementById("outAmount")
+ .textContent="₹"+state.amount.toFixed(2);
+
+ document.getElementById("outBank")
+ .textContent=state.bank;
+
+ document.getElementById("txn")
+ .textContent=
+ "DEMO"+Math.floor(
+ 10000000+Math.random()*89999999
+ );
+
+ document.getElementById("time")
+ .textContent=
+ new Date().toLocaleString();
+
+ go("s9");
+}
+
+updateAmount();
+</script>
+
+</body>
+</html>
