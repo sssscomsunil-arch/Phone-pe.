@@ -1,0 +1,10 @@
+{
+  "name": "PayFast Demo Simulation",
+  "short_name": "PayFast Demo",
+  "description": "Demo payment-flow simulation. No real transactions.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5f2ff",
+  "theme_color": "#5420d8",
+  "orientation": "portrait"
+}
